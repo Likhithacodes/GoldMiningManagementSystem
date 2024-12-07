@@ -1,0 +1,216 @@
+<div class="container mx-auto mt-8">
+    <!-- Navigation Tabs -->
+    <div class="flex space-x-4 mb-6">
+        <button
+            class="px-4 py-2 rounded border bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'ViewMySites'"
+            (click)="setActiveTab('ViewMySites')"
+        >
+            View My Sites
+        </button>
+        <button
+            class="px-4 py-2 rounded border bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'SearchByLocation'"
+            (click)="setActiveTab('SearchByLocation')"
+        >
+            Search by Location
+        </button>
+        <button
+            class="px-4 py-2 rounded border bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'ViewAllSites'"
+            (click)="setActiveTab('ViewAllSites')"
+        >
+            View All Sites
+        </button>
+        <button
+            class="px-4 py-2 rounded border bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'AddUpdateSites'"
+            (click)="setActiveTab('AddUpdateSites')"
+        >
+            Add/Update Sites
+        </button>
+        
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        {{ errorMessage }}
+    </div>
+
+    <!-- View My Sites -->
+    <div *ngIf="activeTab === 'ViewMySites'" class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800">My Sites</h2>
+        <table class="w-full table-auto border-collapse border border-gray-300 shadow-md rounded-lg">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border px-4 py-2">Id</th>
+                    <th class="border px-4 py-2">Location</th>
+                    <th class="border px-4 py-2">Total Area(sqft)</th>
+                    <th class="border px-4 py-2">Estimate Yeild(kg)</th>
+                    <th class="border px-4 py-2">Resource Type</th>
+                    <th class="border px-4 py-2">Status</th>
+                    
+                    <th class="border px-4 py-2">Actions</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let site of mySites" class="hover:bg-gray-50">
+                    <td class="border px-4 py-2">{{ site.siteId }}</td>
+                    <td class="border px-4 py-2">{{ site.location }}</td>
+                    <td class="border px-4 py-2">{{ site.totalArea }}</td>
+                    <td class="border px-4 py-2">{{ site.yieldEstimate }}</td>
+                    <td class="border px-4 py-2">{{ site.resourceType }}</td>
+                    <td class="border px-4 py-2">{{ site.siteStatus }}</td>
+                    
+                    
+                    
+                    <td class="border px-4 py-2 space-x-2">
+                        <button
+                            class="bg-yellow-500 px-4 py-2 rounded text-white hover:bg-yellow-600 transition"
+                            (click)="editSite(site)"
+                        >
+                            Edit
+                        </button>
+                        <button
+                            class="bg-red-500 px-4 py-2 rounded text-white hover:bg-red-600 transition"
+                            (click)="deleteSite(site.siteId)"
+                        >
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- View All Sites -->
+    <div *ngIf="activeTab === 'ViewAllSites'" class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800">All Sites</h2>
+        <table class="w-full table-auto border-collapse border border-gray-300 shadow-md rounded-lg">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border px-4 py-2">Location</th>
+                    <th class="border px-4 py-2">Estimated Yeild</th>
+                    <th class="border px-4 py-2">Resource Type</th>
+                    <th class="border px-4 py-2">Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let site of allSites" class="hover:bg-gray-50 text-center">
+                    <td class="border px-4 py-2">{{ site.location }}</td>
+                    <td class="border px-4 py-2">{{ site.yieldEstimate }}</td>
+                    <td class="border px-4 py-2">{{ site.resourceType }}</td>
+                    <td class="border px-4 py-2">{{ site.siteStatus }}</td>
+                    
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add/Update Sites -->
+    <div *ngIf="activeTab === 'AddUpdateSites'" class="p-6 bg-white shadow-lg rounded-lg">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">
+            {{ isEditing ? 'Update Site' : 'Add Site' }}
+        </h2>
+        <form [formGroup]="siteForm" (ngSubmit)="saveSite()">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="location" class="block text-gray-700 font-medium mb-1">Location</label>
+                    <input
+                        id="location"
+                        type="text"
+                        formControlName="location"
+                        class="w-full border p-2 rounded"
+                    />
+                </div>
+                <div>
+                    <label for="totalArea" class="block text-gray-700 font-medium mb-1">Total Area</label>
+                    <input
+                        id="totalArea"
+                        type="number"
+                        formControlName="totalArea"
+                        class="w-full border p-2 rounded"
+                    />
+                </div>
+                <div>
+                    <label for="resourceType" class="block text-gray-700 font-medium mb-1">Resource Type</label>
+                    <input
+                        id="resourceType"
+                        type="text"
+                        formControlName="resourceType"
+                        class="w-full border p-2 rounded"
+                    />
+                </div>
+                <div>
+                    <label for="yieldEstimate" class="block text-gray-700 font-medium mb-1">Yield Estimate</label>
+                    <input
+                        id="yieldEstimate"
+                        type="number"
+                        formControlName="yieldEstimate"
+                        class="w-full border p-2 rounded"
+                    />
+                </div>
+                <div>
+                    <label for="siteStatus" class="block text-gray-700 font-medium mb-1">Site Status</label>
+                    <select
+                        id="siteStatus"
+                        formControlName="siteStatus"
+                        class="w-full border p-2 rounded"
+                    >
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button
+                    type="submit"
+                    class="bg-orange-700 text-white px-6 py-2 rounded hover:bg-green-600 transition"
+                >
+                    {{ isEditing ? 'Update' : 'Add' }} Site
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search by Location -->
+    <div *ngIf="activeTab === 'SearchByLocation'" class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800">Search by Location</h2>
+        <div class="flex space-x-4">
+            <input
+                type="text"
+                [(ngModel)]="searchLocation"
+                placeholder="Enter location to search"
+                class="border p-2 rounded w-64"
+            />
+            <button
+                class="bg-orange-700 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+                (click)="searchSitesByLocation()"
+            >
+                Search
+            </button>
+        </div>
+        <table class="w-full table-auto border-collapse border border-gray-300 shadow-md rounded-lg mt-4">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border px-4 py-2">Site ID</th>
+                    <th class="border px-4 py-2">Location</th>
+                    <th class="border px-4 py-2">Total Area</th>
+                    <th class="border px-4 py-2">Resource Type</th>
+                    <th class="border px-4 py-2">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let site of searchResults" class="hover:bg-gray-50">
+                    <td class="border px-4 py-2">{{ site.siteId }}</td>
+                    <td class="border px-4 py-2">{{ site.location }}</td>
+                    <td class="border px-4 py-2">{{ site.totalArea }}</td>
+                    <td class="border px-4 py-2">{{ site.resourceType }}</td>
+                    <td class="border px-4 py-2">{{ site.siteStatus }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

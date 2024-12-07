@@ -1,0 +1,88 @@
+<div class="container mx-auto mt-8 p-6 bg-white shadow-lg rounded-lg">
+    <h2 class="text-3xl font-bold text-center mb-6">Environmental Data Management</h2>
+  
+    <!-- Tab Navigation -->
+    <div class="flex justify-center gap-4 mb-6">
+      <button (click)="setActiveTab('fetchBySiteId')" 
+              [class.bg-blue-600]="activeTab === 'fetchBySiteId'"
+              class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Fetch by Site ID
+      </button>
+      <button (click)="setActiveTab('showAll')" 
+              [class.bg-gray-600]="activeTab === 'showAll'"
+              class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
+        Show All
+      </button>
+      <button (click)="setActiveTab('add')" 
+              [class.bg-green-600]="activeTab === 'add'"
+              class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+        Add Environmental Data
+      </button>
+    </div>
+  
+    <!-- Fetch by Site ID -->
+    <div *ngIf="activeTab === 'fetchBySiteId'" class="flex justify-center gap-4 mb-6">
+      <input
+        type="number"
+        [(ngModel)]="siteId"
+        placeholder="Enter Site ID"
+        class="p-2 border rounded w-64"
+      />
+      <button (click)="fetchBySiteId()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        Fetch
+      </button>
+    </div>
+  
+    <!-- Add/Update Form -->
+    <div *ngIf="activeTab === 'add'" class="mb-6">
+      <h3 class="text-xl font-bold mb-4">{{ isEditing ? 'Update' : 'Add' }} Environmental Data</h3>
+      <form [formGroup]="dataForm" (ngSubmit)="addEnvironmentalData()" class="grid grid-cols-2 gap-4">
+        <input formControlName="siteId" placeholder="Site ID" class="p-2 border rounded" />
+        <input formControlName="impactType" placeholder="Impact Type" class="p-2 border rounded" />
+        <input formControlName="date" type="date" class="p-2 border rounded" />
+        <input formControlName="conductedByUsername" placeholder="Conducted By" class="p-2 border rounded" />
+        <textarea formControlName="recommendations" placeholder="Recommendations" class="p-2 border rounded col-span-2"></textarea>
+        <button type="submit" class="col-span-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          Submit
+        </button>
+      </form>
+    </div>
+  
+    <!-- Display Environmental Data (only for Show All) -->
+    <div *ngIf="activeTab === 'showAll' && environmentalDataList.length > 0">
+      <h3 class="text-xl font-bold mb-4">Environmental Assessments</h3>
+      <table class="table-auto w-full border-collapse border border-gray-300">
+        <thead>
+          <tr>
+            <th class="border px-4 py-2">ID</th>
+            <th class="border px-4 py-2">Site ID</th>
+            <th class="border px-4 py-2">Impact Type</th>
+            <th class="border px-4 py-2">Date</th>
+            <th class="border px-4 py-2">Conducted By</th>
+            <th class="border px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of environmentalDataList">
+            <td class="border px-4 py-2">{{ data.assessmentId }}</td>
+            <td class="border px-4 py-2">{{ data.siteId }}</td>
+            <td class="border px-4 py-2">{{ data.impactType }}</td>
+            <td class="border px-4 py-2">{{ data.date | date }}</td>
+            <td class="border px-4 py-2">{{ data.conductedByUsername }}</td>
+            <td class="border px-4 py-2 flex gap-2">
+              <button (click)="editEnvironmentalData(data)" class="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600">
+                Edit
+              </button>
+              <button (click)="deleteEnvironmentalData(data.assessmentId)" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mt-4 text-red-500 text-center">{{ errorMessage }}</div>
+  </div>
+  

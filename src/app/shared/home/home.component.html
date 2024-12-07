@@ -1,0 +1,123 @@
+<div class="flex flex-col h-full bg-gray-200 overflow-hidden">
+    <!-- Scrollable Content -->
+    <div class="flex-1 overflow-y-auto">
+        <div class="p-8 bg-gray-200">
+            <h2 class="text-4xl font-bold font-serif text-gray-800 mb-4 mt-2">
+              Welcome to GoldMineMana
+            </h2>
+            <p class="text-gray-700 leading-relaxed text-lg ">
+              GoldMine Management System streamlines operations across all aspects of mining. From managing geological data to overseeing production, equipment, cost, and more, this tool ensures seamless management and improved efficiency.
+            </p>
+          </div>
+      <!-- Hero Section with Infinite Image Slider -->
+      <div class="relative overflow-hidden bg-black h-96 m-4 rounded-lg">
+        <div class="relative w-full h-96">
+          <div
+            *ngFor="let image of images; let i = index"
+            class="absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out"
+            [ngClass]="{
+              'opacity-100': currentIndex === i,
+              'opacity-0': currentIndex !== i
+            }"
+          >
+            <img
+              [src]="image"
+              alt="GoldMine"
+              class="w-full h-full object-cover transform scale-100 transition-transform duration-[3000ms] ease-in-out"
+              [ngClass]="{
+                'scale-110': currentIndex === i
+              }"
+            />
+          </div>
+        </div>
+      </div>
+      
+  
+      <!-- Welcome Section -->
+      <!-- Media Section -->
+      <div class="bg-[#1e293b] text-white py-10 px-6">
+        <!-- Section Header -->
+        <div class="flex justify-between items-center mb-8">
+          <h2 class="text-3xl font-serif text-yellow-400">GoldMining In The Media</h2>
+          <a href="https://www.youtube.com/results?search_query=gold+mining+videos" class="text-yellow-400 hover:underline">View All</a>
+        </div>
+  
+        <!-- Media Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-2">
+          <!-- Card 1 -->
+          <div class="bg-[#2a3b4e] p-4 rounded-lg shadow-md transform transition duration-500 hover:-translate-y-2 hover:shadow-lg">
+            <p class="text-gray-400 text-sm mb-2">September 24 / 2024</p>
+            <h3 class="text-lg font-medium text-gray-200 mb-4">
+              GoldMining Inc. CEO Alastair Still from the Beaver Creek Precious Metals Summit
+            </h3>
+            <a href="https://youtu.be/xf_xNPv1w7E?si=qID2QAecvPtwBP2C" class="text-yellow-400 flex items-center hover:underline">
+              View Video <span class="ml-2">➤</span>
+            </a>
+          </div>
+  
+          <!-- Card 2 -->
+          <div class="bg-[#2a3b4e] p-4 rounded-lg shadow-md transform transition duration-500 hover:-translate-y-2 hover:shadow-lg">
+            <p class="text-gray-400 text-sm mb-2">September 19 / 2024</p>
+            <h3 class="text-lg font-medium text-gray-200 mb-4">
+              GoldMining Inc: Back In Action
+            </h3>
+            <a href="https://youtu.be/xf_xNPv1w7E?si=qID2QAecvPtwBP2C" class="text-yellow-400 flex items-center hover:underline">
+              View Video <span class="ml-2">➤</span>
+            </a>
+          </div>
+  
+          <!-- Card 3 -->
+          <div class="bg-[#2a3b4e] p-4 rounded-lg shadow-md transform transition duration-500 hover:-translate-y-2 hover:shadow-lg">
+            <p class="text-gray-400 text-sm mb-2">July 23 / 2024</p>
+            <h3 class="text-lg font-medium text-gray-200 mb-4">
+              Replay: GoldMining Inc CEO, Alastair Still, presents at the Rule Symposium on July 8, 2024
+            </h3>
+            <a href="https://youtu.be/xf_xNPv1w7E?si=qID2QAecvPtwBP2C" class="text-yellow-400 flex items-center hover:underline">
+              View Video <span class="ml-2">➤</span>
+            </a>
+          </div>
+  
+          <!-- Card 4 -->
+          <div class="bg-[#2a3b4e] p-4 rounded-lg shadow-md transform transition duration-500 hover:-translate-y-2 hover:shadow-lg">
+            <p class="text-gray-400 text-sm mb-2">March 13 / 2024</p>
+            <h3 class="text-lg font-medium text-gray-200 mb-4">
+              Gold Rally Sparks Miner Optimism, Here's How to Unlock Value
+            </h3>
+            <a href="https://youtu.be/xf_xNPv1w7E?si=qID2QAecvPtwBP2C" class="text-yellow-400 flex items-center hover:underline">
+              View Video <span class="ml-2">➤</span>
+            </a>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Features Section -->
+      <div class="p-8 bg-gray-100">
+        <h3 class="text-3xl font-bold text-gray-800 mt-8 mb-6 font-serif">Features</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div class="bg-white shadow-lg p-6 rounded-lg transform transition duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <h4 class="text-xl font-bold text-yellow-500">Production Management</h4>
+            <p class="text-gray-700 mt-2">Track and manage all production activities efficiently with comprehensive reports and tools.</p>
+          </div>
+          <div class="bg-white shadow-lg p-6 rounded-lg transform transition duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <h4 class="text-xl font-bold text-yellow-500">Geological Data Insights</h4>
+            <p class="text-gray-700 mt-2">Gain insights into geological data to make informed decisions.</p>
+          </div>
+          <div class="bg-white shadow-lg p-6 rounded-lg transform transition duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <h4 class="text-xl font-bold text-yellow-500">Cost Tracking and Reports</h4>
+            <p class="text-gray-700 mt-2">Monitor costs and generate detailed reports for improved financial management.</p>
+          </div>
+          <div class="bg-white shadow-lg p-6 rounded-lg transform transition duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <h4 class="text-xl font-bold text-yellow-500">Environmental Data Monitoring</h4>
+            <p class="text-gray-700 mt-2">Ensure compliance and monitor environmental impacts effectively.</p>
+          </div>
+          <div class="bg-white shadow-lg p-6 rounded-lg transform transition duration-500 hover:-translate-y-2 hover:shadow-xl">
+            <h4 class="text-xl font-bold text-yellow-500">Mine Planning Tools</h4>
+            <p class="text-gray-700 mt-2">Plan and optimize mining operations with advanced tools.</p>
+          </div>
+        </div>
+      </div>
+  
+      
+    </div>
+  </div>
+  

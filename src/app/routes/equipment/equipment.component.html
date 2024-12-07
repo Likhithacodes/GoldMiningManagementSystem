@@ -1,0 +1,188 @@
+<div class="container mx-auto mt-8 p-6 bg-white shadow-lg rounded-lg">
+    <!-- Tabs -->
+    <div class="flex gap-4 mb-6 justify-center">
+      <button
+        class="btn px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+        [class.bg-yellow-700]="activeTab === 'viewAll'"
+        (click)="setActiveTab('viewAll')"
+      >
+        View All Equipment
+      </button>
+      <button
+        class="btn px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+        [class.bg-yellow-700]="activeTab === 'viewBySite'"
+        (click)="setActiveTab('viewBySite')"
+      >
+        View Equipment by Site
+      </button>
+      <button
+        class="btn px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
+        [class.bg-green-700]="activeTab === 'addUpdate'"
+        (click)="setActiveTab('addUpdate')"
+      >
+        Add/Update Equipment
+      </button>
+      <button
+        class="btn px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+        [class.bg-blue-700]="activeTab === 'assign'"
+        (click)="setActiveTab('assign')"
+      >
+        Assign Equipment to Site
+      </button>
+    </div>
+  
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="assignmentMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+      {{ assignmentMessage }}
+    </div>
+  
+    <!-- View All Equipment -->
+    <div *ngIf="activeTab === 'viewAll'">
+      <h2 class="text-2xl font-bold mb-4 text-center text-gray-700">All Equipment</h2>
+      <table class="w-full table-auto border-collapse border border-gray-300 shadow-sm rounded-lg">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="border px-4 py-2">Id</th>
+            <th class="border px-4 py-2">SiteId</th>
+            <th class="border px-4 py-2">Name</th>
+            <th class="border px-4 py-2">Type</th>
+            <th class="border px-4 py-2">Condition</th>
+            <th class="border px-4 py-2">Cost</th>
+            <th class="border px-4 py-2">Maintenance Date</th>
+            <th class="border px-4 py-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let equip of equipmentList" class="hover:bg-gray-100">
+            <td class="border px-4 py-2">{{ equip.equipmentId }}</td>
+            <td class="border px-4 py-2">{{ equip.assignedSite }}</td>
+            <td class="border px-4 py-2">{{ equip.nameOfEquipment }}</td>
+            <td class="border px-4 py-2 capitalize">{{ equip.typeOfEquipment }}</td>
+            <td class="border px-4 py-2">{{ equip.condition }}</td>
+            <td class="border px-4 py-2">{{ equip.cost }}</td>
+            <td class="border px-4 py-2">{{ equip.maintenanceDate }}</td>
+            <td class="border px-4 py-2 flex gap-2 justify-center">
+              <button
+                (click)="editEquipment(equip)"
+                class="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+              >
+                Edit
+              </button>
+              <button
+                (click)="deleteEquipment(equip.nameOfEquipment)"
+                class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition"
+              >
+                Delete
+              </button>
+              <button (click)="removeEquipmentFromSite(equip.equipmentId)" class="px-3 py-1 rounded bg-orange-500 text-white hover:bg-orange-600 transition">
+                unAssign
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- View Equipment by Site -->
+    <div *ngIf="activeTab === 'viewBySite'">
+      <h2 class="text-2xl font-bold mb-4 text-center text-gray-700">View Equipment by Site</h2>
+      <div class="flex gap-4 justify-center mb-4">
+        <input
+          type="number"
+          [(ngModel)]="selectedSiteId"
+          placeholder="Enter Site ID"
+          class="border p-2 rounded w-64 focus:ring focus:ring-yellow-400"
+        />
+        <button (click)="fetchEquipmentBySite()" class="btn px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition">
+          Fetch Data
+        </button>
+      </div>
+      <table *ngIf="equipmentBySite.length" class="w-full table-auto mt-4 border-collapse border border-gray-300 shadow-sm rounded-lg">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="border px-4 py-2">Name</th>
+            <th class="border px-4 py-2">Type</th>
+            <th class="border px-4 py-2">Condition</th>
+            <th class="border px-4 py-2">Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let equip of equipmentBySite" class="hover:bg-gray-100">
+            <td class="border px-4 py-2">{{ equip.nameOfEquipment }}</td>
+            <td class="border px-4 py-2 capitalize">{{ equip.typeOfEquipment }}</td>
+            <td class="border px-4 py-2">{{ equip.condition }}</td>
+            <td class="border px-4 py-2">{{ equip.cost }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Assign Equipment to Site -->
+    <div *ngIf="activeTab === 'assign'">
+      <h2 class="text-2xl font-bold mb-4 text-center text-gray-700">Assign Equipment to Site</h2>
+      <div class="flex flex-col md:flex-row gap-4 justify-center items-center mb-6">
+        <input
+          type="number"
+          [(ngModel)]="equipmentIdToAssign"
+          placeholder="Enter Equipment ID"
+          class="border p-2 rounded w-64 focus:ring focus:ring-yellow-400"
+        />
+        <input
+          type="number"
+          [(ngModel)]="siteIdToAssign"
+          placeholder="Enter Site ID"
+          class="border p-2 rounded w-64 focus:ring focus:ring-yellow-400"
+        />
+        <button
+          (click)="assignEquipment()"
+          class="btn px-4 py-2 rounded bg-green-500 text-white hover:bg-green-600 transition"
+        >
+          Assign Equipment
+        </button>
+      </div>
+    </div>
+  
+    <!-- Add/Update Equipment -->
+    <div *ngIf="activeTab === 'addUpdate'">
+      <h2 class="text-2xl font-bold mb-6 text-center text-gray-700">
+        {{ isEditing ? 'Update Equipment' : 'Add Equipment' }}
+      </h2>
+      <form [formGroup]="equipmentForm" (ngSubmit)="saveEquipment()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block mb-2 font-medium text-gray-600">Name</label>
+          <input formControlName="nameOfEquipment" placeholder="Name" class="w-full border p-2 rounded focus:ring focus:ring-green-300" />
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-600">Type</label>
+          <select formControlName="typeOfEquipment" class="w-full border p-2 rounded focus:ring focus:ring-green-300">
+            <option value="fuel">Fuel</option>
+            <option value="explosives">Explosives</option>
+          </select>
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-600">Condition</label>
+          <select formControlName="condition" class="w-full border p-2 rounded focus:ring focus:ring-green-300">
+            <option value="Good">Good</option>
+            <option value="NeedsMaintenance">Needs Maintenance</option>
+          </select>
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-600">Maintenance Date</label>
+          <input formControlName="maintenanceDate" type="date" class="w-full border p-2 rounded focus:ring focus:ring-green-300" />
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-600">Cost</label>
+          <input formControlName="cost" type="number" placeholder="Cost" class="w-full border p-2 rounded focus:ring focus:ring-green-300" />
+        </div>
+        <div class="col-span-2 flex justify-center">
+          <button type="submit" class="btn px-6 py-2 rounded bg-green-500 text-white hover:bg-green-600 transition">
+            {{ isEditing ? 'Update' : 'Add' }} Equipment
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  

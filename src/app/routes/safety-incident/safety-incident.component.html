@@ -1,0 +1,193 @@
+<div class="container mx-auto mt-8 p-6 bg-gray-50 shadow-md rounded-lg">
+    <!-- Tabs -->
+    <div class="flex flex-wrap gap-4 mb-6 justify-center">
+      <button
+        (click)="setActiveTab('viewAll')"
+        [class.bg-yellow-500]="activeTab === 'viewAll'"
+        class="px-6 py-2 rounded-lg text-white bg-blue-500 hover:bg-yellow-700 transition"
+      >
+        View All Incidents
+      </button>
+      <button
+        (click)="setActiveTab('viewBySite')"
+        [class.bg-blue-600]="activeTab === 'viewBySite'"
+        class="px-6 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition"
+      >
+        View by Site
+      </button>
+      <button
+        (click)="setActiveTab('addUpdate')"
+        [class.bg-green-700]="activeTab === 'addUpdate'"
+        class="px-6 py-2 rounded-lg text-white bg-green-500 hover:bg-green-600 transition"
+      >
+        Add/Update Incident
+      </button>
+    </div>
+  
+    <!-- View All Incidents -->
+    <div *ngIf="activeTab === 'viewAll'" class="bg-white p-6 rounded-lg">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">All Incidents</h2>
+      <div class="overflow-auto">
+        <table class="w-full table-auto border-collapse border border-gray-300 shadow-md">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="border px-4 py-2">ID</th>
+              <th class="border px-4 py-2">Site ID</th>
+              <th class="border px-4 py-2">Description</th>
+              <th class="border px-4 py-2">Severity</th>
+              <th class="border px-4 py-2">Resolution</th>
+              <th class="border px-4 py-2">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              *ngFor="let incident of safetyIncidents"
+              class="hover:bg-gray-100 transition"
+            >
+              <td class="border px-4 py-2 text-center">{{ incident.incidentId }}</td>
+              <td class="border px-4 py-2 text-center">{{ incident.siteId }}</td>
+              <td class="border px-4 py-2">{{ incident.description }}</td>
+              <td
+                class="border px-4 py-2 text-center capitalize font-medium"
+                [class.text-red-600]="incident.severity === 'Critical'"
+                [class.text-yellow-500]="incident.severity === 'Major'"
+                [class.text-green-500]="incident.severity === 'Minor'"
+              >
+                {{ incident.severity }}
+              </td>
+              <td
+                class="border px-4 py-2 text-center font-medium"
+                [class.text-green-600]="incident.resolutionStatus === 'Resolved'"
+                [class.text-gray-500]="incident.resolutionStatus === 'Pending'"
+              >
+                {{ incident.resolutionStatus }}
+              </td>
+              <td class="border px-4 py-2 text-center">
+                <button
+                  (click)="editIncident(incident)"
+                  class="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+                >
+                  Edit
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- View Incidents by Site -->
+    <div *ngIf="activeTab === 'viewBySite'" class="bg-white p-6 rounded-lg ">
+      <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">
+        Incidents by Site
+      </h2>
+      <div class="flex justify-center gap-4 mb-4">
+        <input
+          type="number"
+          [(ngModel)]="selectedSiteId"
+          placeholder="Enter Site ID"
+          class="border p-2 rounded-lg focus:ring-2 focus:ring-blue-400 w-64"
+        />
+        <button
+          (click)="fetchIncidentsBySite()"
+          class="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition"
+        >
+          Fetch
+        </button>
+      </div>
+      <div *ngIf="incidentsBySite.length">
+        <table class="w-full table-auto border-collapse border border-gray-300">
+          <thead class="bg-gray-100">
+            <tr>
+              <th class="border px-4 py-2">Description</th>
+              <th class="border px-4 py-2">Severity</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let incident of incidentsBySite" class="hover:bg-gray-100">
+              <td class="border px-4 py-2">{{ incident.description }}</td>
+              <td class="border px-4 py-2 capitalize font-medium">
+                {{ incident.severity }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- Add/Update Incident -->
+    <div *ngIf="activeTab === 'addUpdate'" class="bg-white p-6 rounded-lg">
+        <h2 class="text-2xl font-semibold text-gray-800 mb-4 text-center">
+          {{ isEditing ? 'Update Incident' : 'Add Incident' }}
+        </h2>
+        <form
+          [formGroup]="incidentForm"
+          (ngSubmit)="saveIncident()"
+          class="grid grid-cols-1 md:grid-cols-2 gap-6"
+        >
+          <div>
+            <label class="block text-gray-600 mb-2">Site ID</label>
+            <input
+              formControlName="siteId"
+              placeholder="Site ID"
+              class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Date</label>
+            <input
+              formControlName="date"
+              type="date"
+              class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Description</label>
+            <input
+              formControlName="description"
+              placeholder="Description"
+              class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Severity</label>
+            <select
+              formControlName="severity"
+              class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="Minor">Minor</option>
+              <option value="Major">Major</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Resolution Status</label>
+            <select
+              formControlName="resolutionStatus"
+              class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            >
+              <option value="Resolved">Resolved</option>
+              <option value="Pending">Pending</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-600 mb-2">Reported By</label>
+            <input
+              formControlName="reportedByUserName"
+              placeholder="Reported By"
+              class="w-full border p-2 rounded-lg focus:ring-2 focus:ring-blue-400"
+            />
+          </div>
+          <div class="col-span-2 text-center">
+            <button
+              type="submit"
+              class="px-6 py-2 rounded-lg bg-green-500 text-white hover:bg-green-600 transition"
+            >
+              {{ isEditing ? 'Update' : 'Add' }} Incident
+            </button>
+          </div>
+        </form>
+      </div>
+      
+  </div>
+  

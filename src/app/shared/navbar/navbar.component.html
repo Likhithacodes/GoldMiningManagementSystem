@@ -1,0 +1,26 @@
+<nav class="shadow-md p-4 bg-black text-white w-auto">
+  <div class="flex justify-between items-center container">
+    <!-- Logo Section -->
+    <div class="flex items-center">
+      <img [routerLink]="'/Home'"
+        src="../../../assets/images/login.jpg"
+        class="w-10 h-10 rounded-full object-cover"
+        alt="Logo"
+      />
+      
+    </div>
+
+    <!-- User Info Section -->
+    <div class="flex items-center space-x-4">
+      <span *ngIf="username" class="text-md">
+        Welcome, <span class="font-bold text-yellow-500">{{ username }}</span>
+      </span>
+      <button
+        (click)="logout()"
+        class="bg-yellow-500 px-6 py-2 rounded-lg hover:bg-yellow-600 transition"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>

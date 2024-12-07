@@ -1,0 +1,70 @@
+<div class="container mx-auto mt-8 p-6 bg-white shadow-lg rounded-lg">
+    <h2 class="text-3xl font-bold text-center mb-6">Generate Reports</h2>
+  
+    <!-- Site ID Input -->
+     <div class="flex justify-center mb-2">
+        <p class="font-bold">Enter the Site Id</p>
+     </div>
+    <div class="flex justify-center text-center gap-4 mb-6">
+        
+      <input
+        type="number"
+        [(ngModel)]="selectedSiteId"
+        placeholder="Enter Site ID"
+        class="p-2 border rounded w-64"
+      />
+    </div>
+  
+    <!-- Buttons to Generate Reports -->
+    <div class="flex justify-center gap-4 mb-6">
+      <button (click)="generateReport('production')" class="bg-green-500 text-white px-4 py-2 rounded">
+        Generate Production Report
+      </button>
+      <button (click)="generateReport('cost')" class="bg-yellow-500 text-white px-4 py-2 rounded">
+        Generate Cost Report
+      </button>
+      <button (click)="generateReport('equipment')" class="bg-purple-500 text-white px-4 py-2 rounded">
+        Generate Equipment Report
+      </button>
+      <button (click)="generateReport('safety')" class="bg-red-500 text-white px-4 py-2 rounded">
+        Generate Safety Report
+      </button>
+      <button (click)="generateReport('environment')" class="bg-indigo-500 text-white px-4 py-2 rounded">
+        Generate Environmental Report
+      </button>
+    </div>
+  
+    <!-- Display Generated Report -->
+    <div *ngIf="generatedReport" class="mt-6 p-4 bg-gray-100 rounded shadow" id="reportContent">
+        <h3 class="text-2xl font-bold mb-4">Generated Report</h3>
+        
+        <!-- Iterate through the report keys -->
+        <div *ngFor="let key of objectKeys(generatedReport)">
+          <ng-container *ngIf="isObject(generatedReport[key]); else simpleValue">
+            <p class="font-bold">{{ formatKey(key) }}:</p>
+            <ul class="list-disc ml-6">
+              <li *ngFor="let subKey of objectKeys(generatedReport[key])">
+                <strong>{{ formatKey(subKey) }}:</strong> {{ generatedReport[key][subKey] }}
+              </li>
+            </ul>
+          </ng-container>
+      
+          <!-- Simple key-value pair -->
+          <ng-template #simpleValue>
+            <p><strong>{{ formatKey(key) }}:</strong> {{ generatedReport[key] }}</p>
+          </ng-template>
+        </div>
+      
+        <!-- Print Report Button -->
+        <button (click)="printReport()" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+          Print Report
+        </button>
+      </div>
+      
+  
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="mt-4 text-red-500 text-center">
+      {{ errorMessage }}
+    </div>
+  </div>
+  

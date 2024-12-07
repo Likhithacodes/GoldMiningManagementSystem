@@ -1,0 +1,170 @@
+<div class="container mx-auto mt-8">
+    <!-- Navigation Tabs -->
+    <div class="flex flex-wrap space-x-4 mb-6">
+        <button
+            class="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'All Productions'"
+            (click)="setActiveTab('All Productions'); fetchProductions()"
+        >
+            All Productions
+        </button>
+        <button
+            class="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'YieldEfficiency'"
+            (click)="setActiveTab('YieldEfficiency');fetchYieldEfficiencyForAllSites()"
+        >
+            Yield Efficiency for All Sites
+        </button>
+        <button
+            class="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'Daily Production'"
+            (click)="setActiveTab('Daily Production'); fetchDailyProduction()"
+        >
+            Daily Production
+        </button>
+        <button
+            class="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'Weekly Production'"
+            (click)="setActiveTab('Weekly Production'); fetchWeeklyProduction()"
+        >
+            Weekly Production
+        </button>
+        <button
+            class="px-4 py-2 rounded bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'Monthly Production'"
+            (click)="setActiveTab('Monthly Production'); fetchMonthlyProduction()"
+        >
+            Monthly Production
+        </button>
+        <button
+    class="px-4 py-2 my-2 bg-green-500 text-white rounded hover:bg-green-600 transition"
+    [class.bg-green-700]="activeTab === 'Form'"
+    (click)="openFormForAdd()"
+>
+    Add/Update Production
+</button>
+
+    </div>
+    
+    <!-- Site Selection -->
+    <div *ngIf="activeTab === 'Monthly Production' ||activeTab === 'Weekly Production' ||activeTab === 'Daily Production'" class="mb-6">
+        <label class="block text-gray-700 font-medium mb-1">Enter Site ID:</label>
+        <div class="flex space-x-2">
+            <input
+                type="number"
+                [(ngModel)]="selectedSiteId"
+                placeholder="Enter Site ID"
+                class="w-full border p-2 rounded"
+            />
+            <button
+                class="px-4 py-2 rounded bg-blue-500 text-white hover:bg-blue-600 transition"
+                (click)="fetchSiteData()"
+            >
+                Enter
+            </button>
+        </div>
+    </div>
+
+    <!-- Error Message
+    <div *ngIf="errorMessage" class="bg-red-100 text-red-600 p-4 rounded mb-4">
+        {{ errorMessage }}
+    </div> -->
+     <!-- Yield Efficiency Chart -->
+     <div *ngIf="activeTab ==='YieldEfficiency'&& yieldEfficiencies.length > 0 " class="mb-8">
+        <h3 class="text-xl font-bold mb-4">Yield Efficiency for All Sites</h3>
+        <canvas id="yieldEfficiencyChart"></canvas>
+    </div>
+    <!-- Active Tab Content -->
+    <div *ngIf="activeTab === 'All Productions'" class="mt-8">
+        <h3 class="text-xl font-bold mb-4">All Productions</h3>
+        <table class="w-full table-auto border-collapse border border-gray-300 shadow-md rounded-lg">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border px-4 py-2">Production ID</th>
+                    <th class="border px-4 py-2">Site ID</th>
+                    <th class="border px-4 py-2">Ore Extracted</th>
+                    <th class="border px-4 py-2">Gold Produced</th>
+                    <th class="border px-4 py-2">Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let production of productions" class="hover:bg-gray-50">
+                    <td class="border px-4 py-2">{{ production.productionId }}</td>
+                    <td class="border px-4 py-2">{{ production.siteId }}</td>
+                    <td class="border px-4 py-2">{{ production.oreExtracted }}</td>
+                    <td class="border px-4 py-2">{{ production.goldProduced }}</td>
+                    <td class="border px-4 py-2">{{ production.date | date }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Daily Production -->
+    <div *ngIf="activeTab === 'Daily Production'" class="mt-8">
+        <h3 class="text-xl font-bold mb-4">Daily Production</h3>
+        <div *ngIf="dailyProduction as dailyData">
+            <ul>
+                <li *ngFor="let day of dailyData">
+                    <strong>{{ day.key | date }}</strong>: {{ day.value }} kgs of gold 
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Weekly Production -->
+    <div *ngIf="activeTab === 'Weekly Production'" class="mt-8">
+        <h3 class="text-xl font-bold mb-4">Weekly Production</h3>
+        <div *ngIf="weeklyProduction | keyvalue as weeklyData">
+            <ul>
+                <li *ngFor="let week of weeklyData">
+                    <strong>Week {{ week.key }}</strong>: {{ week.value }} grams of gold
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Monthly Production -->
+    <div *ngIf="activeTab === 'Monthly Production'" class="mt-8">
+        <h3 class="text-xl font-bold mb-4">Monthly Production</h3>
+        <div *ngIf="monthlyProduction | keyvalue as monthlyData">
+            <ul>
+                <li *ngFor="let month of monthlyData">
+                    <strong>Month {{ month.key }}</strong>: {{ month.value }} grams of gold
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Production Form -->
+    <div *ngIf="activeTab === 'Form'" class="p-6 bg-white shadow-lg rounded-lg mt-8">
+        <h2 class="text-2xl font-bold mb-6">
+            {{ isEditing ? 'Update Production' : 'Add Production' }}
+        </h2>
+        <form [formGroup]="productionForm" (ngSubmit)="saveProduction()">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Site ID</label>
+                    <input type="number" formControlName="siteId" class="w-full border p-2 rounded" />
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Ore Extracted</label>
+                    <input type="number" formControlName="oreExtracted" class="w-full border p-2 rounded" />
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Gold Produced</label>
+                    <input type="number" formControlName="goldProduced" class="w-full border p-2 rounded" />
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium mb-1">Date</label>
+                    <input type="date" formControlName="date" class="w-full border p-2 rounded" />
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
+                    {{ isEditing ? 'Update' : 'Add' }} Production
+                </button>
+            </div>
+        </form>
+    </div>
+    
+</div>

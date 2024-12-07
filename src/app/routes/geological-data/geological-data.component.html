@@ -1,0 +1,186 @@
+<div class="container mx-auto mt-8">
+    <!-- Navigation Tabs -->
+    <div class="flex flex-wrap gap-4 justify-start sm:justify-center mb-6">
+        <button
+            class="px-4 py-2 rounded border bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'ViewAllGeologicalData'"
+            (click)="setActiveTab('ViewAllGeologicalData'); fetchAllGeologicalData()"
+        >
+            View All Geological Data
+        </button>
+        <button
+            class="px-4 py-2 rounded border bg-yellow-500 text-white hover:bg-yellow-600 transition"
+            [class.bg-yellow-700]="activeTab === 'ViewGeologicalDataBySite'"
+            (click)="setActiveTab('ViewGeologicalDataBySite')"
+        >
+            View Geological Data by Site
+        </button>
+        <button
+            class="px-4 py-2 rounded border bg-green-500 text-white hover:bg-green-600 transition"
+            [class.bg-green-700]="activeTab === 'AddGeologicalData'"
+            (click)="setActiveTab('AddGeologicalData'); openAddForm()"
+        >
+            Add/Update Geological Data
+        </button>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        {{ errorMessage }}
+    </div>
+
+    <!-- View All Geological Data -->
+    <div *ngIf="activeTab === 'ViewAllGeologicalData'" class="space-y-4">
+        <h2 class="text-2xl font-bold text-gray-800">All Geological Data</h2>
+        <table class="w-full table-auto border-collapse border border-gray-300 shadow-md rounded-lg">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border px-4 py-2">Data ID</th>
+                    <th class="border px-4 py-2">Site ID</th>
+                    <th class="border px-4 py-2">Mineral Composition</th>
+                    <th class="border px-4 py-2">Sample Date</th>
+                    <th class="border px-4 py-2">Geologist Username</th>
+                    <th class="border px-4 py-2">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of geologicalData" class="hover:bg-gray-50">
+                    <td class="border px-4 py-2">{{ data.dataId }}</td>
+                    <td class="border px-4 py-2">{{ data.siteId }}</td>
+                    <td class="border px-4 py-2">{{ data.mineralComposition }}</td>
+                    <td class="border px-4 py-2">{{ data.sampleCollectedDate | date }}</td>
+                    <td class="border px-4 py-2">{{ data.geologistUsername }}</td>
+                    <td class="border px-4 py-2 space-x-2">
+                        <button
+                            class="bg-yellow-500 px-4 py-2 rounded text-white hover:bg-yellow-600 transition"
+                            (click)="editGeologicalData(data)"
+                        >
+                            Edit
+                        </button>
+                        <button
+                        class="bg-orange-500 px-4 py-2 rounded text-white hover:bg-blue-600 transition"
+                        (click)="generatePDFForSite(data)"
+                    >
+                        Print
+                    </button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- View Geological Data by Site -->
+     <div class="">
+    <div *ngIf="activeTab === 'ViewGeologicalDataBySite'" class="space-y-4 text-center bg-white p-6 m-4 rounded shadow-md ">
+        <h2 class="text-2xl font-bold text-gray-800">Geological Data by Site</h2>
+        <div class="flex justify-center gap-4">
+            <input
+                type="number"
+                [(ngModel)]="selectedSiteId"
+                placeholder="Enter Site ID"
+                class="border p-2 rounded w-64"
+            />
+            <button
+                class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+                (click)="fetchGeologicalDataBySite()"
+            >
+                Fetch Data
+            </button>
+        </div>
+        <table *ngIf="siteGeologicalData.length" class="w-full table-auto border-collapse border border-gray-300 shadow-md rounded-lg mt-4">
+            <thead class="bg-gray-100">
+                <tr>
+                    <th class="border px-4 py-2">Data ID</th>
+                    <th class="border px-4 py-2">Mineral Composition</th>
+                    <th class="border px-4 py-2">Sample Date</th>
+                    <th class="border px-4 py-2">Geologist Username</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let data of siteGeologicalData" class="hover:bg-gray-50">
+                    <td class="border px-4 py-2">{{ data.dataId }}</td>
+                    <td class="border px-4 py-2">{{ data.mineralComposition }}</td>
+                    <td class="border px-4 py-2">{{ data.sampleCollectedDate | date }}</td>
+                    <td class="border px-4 py-2">{{ data.geologistUsername }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+    <!-- Add/Update Geological Data -->
+    <div *ngIf="activeTab === 'AddGeologicalData'" class="p-6 bg-white shadow-lg rounded-lg">
+        <h2 class="text-2xl font-bold mb-6 text-gray-800">
+            {{ isEditing ? 'Update Geological Data' : 'Add Geological Data' }}
+        </h2>
+        <form [formGroup]="geologicalDataForm" (ngSubmit)="saveGeologicalData()">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="siteId" class="block text-gray-700 font-medium mb-1">Site ID</label>
+                    <input
+                        id="siteId"
+                        type="number"
+                        formControlName="siteId"
+                        class="w-full border p-2 rounded"
+                    />
+                </div>
+                <div>
+                    <label for="mineralComposition" class="block text-gray-700 font-medium mb-1">Mineral Composition</label>
+                    <input
+                        id="mineralComposition"
+                        type="text"
+                        formControlName="mineralComposition"
+                        class="w-full border p-2 rounded"
+                    />
+                </div>
+                <div>
+                    <label for="sampleCollectedDate" class="block text-gray-700 font-medium mb-1">Sample Date</label>
+                    <input
+                        id="sampleCollectedDate"
+                        type="date"
+                        formControlName="sampleCollectedDate"
+                        class="w-full border p-2 rounded"
+                    />
+                </div>
+                <div>
+                    <label for="surveyReport" class="block text-gray-700 font-medium mb-1">Survey Report</label>
+                    <textarea
+                        id="surveyReport"
+                        formControlName="surveyReport"
+                        class="w-full border p-2 rounded"
+                    ></textarea>
+                </div>
+                <div>
+                    <label for="geologistUsername" class="block text-gray-700 font-medium mb-1">Geologist Username</label>
+                    <input
+                        id="geologistUsername"
+                        type="text"
+                        formControlName="geologistUsername"
+                        class="w-full border p-2 rounded"
+                    />
+                </div>
+            </div>
+            <div class="flex ">
+            <div class="mt-4 mr-2">
+                <button
+                    type="button"
+                    class="bg-orange-500 text-white px-6 py-2 rounded hover:bg-blue-600 transition"
+                    (click)="generatePDF()"
+                >
+                    Print/Download PDF
+                </button>
+            </div>
+            <div class="mt-4">
+                <button
+                    type="submit"
+                    class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600 transition"
+                >
+                    {{ isEditing ? 'Update' : 'Add' }} Geological Data
+                </button>
+                
+                
+            </div>
+        </div>
+        </form>
+    </div>
+</div>

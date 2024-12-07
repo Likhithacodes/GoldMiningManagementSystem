@@ -1,0 +1,168 @@
+<div class="container mx-auto mt-8 p-8 bg-gray-100 shadow-xl rounded-lg">
+    <!-- Tabs -->
+    <div class="flex flex-wrap justify-center gap-6 mb-8">
+      <button 
+        (click)="setActiveTab('viewAll')" 
+        [class.bg-blue-600]="activeTab === 'viewAll'"
+        class="px-6 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition duration-300"
+      >
+        View All Plans
+      </button>
+      <button 
+        (click)="setActiveTab('viewBySite')" 
+        [class.bg-green-600]="activeTab === 'viewBySite'"
+        class="px-6 py-2 rounded-lg text-white bg-green-500 hover:bg-green-600 transition duration-300"
+      >
+        View Plans by Site
+      </button>
+      <button 
+        (click)="setActiveTab('addUpdate')" 
+        [class.bg-yellow-600]="activeTab === 'addUpdate'"
+        class="px-6 py-2 rounded-lg text-white bg-yellow-500 hover:bg-yellow-600 transition duration-300"
+      >
+        Add/Update Plan
+      </button>
+    </div>
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+        {{ errorMessage }}
+    </div>
+    <!-- View All Plans -->
+    <div *ngIf="activeTab === 'viewAll'" class="p-6 rounded-lg ">
+      <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">All Mine Plans</h2>
+      <div class="overflow-auto">
+        <table class="w-full table-auto border-collapse border border-gray-200  rounded-lg">
+          <thead class="bg-blue-500 text-white">
+            <tr>
+              <th class="border px-4 py-2 text-center">Plan ID</th>
+              <th class="border px-4 py-2 text-center">Site ID</th>
+              <th class="border px-4 py-2 text-center">Activity</th>
+              <th class="border px-4 py-2 text-center">Start Date</th>
+              <th class="border px-4 py-2 text-center">End Date</th>
+              <th class="border px-4 py-2 text-center">Status</th>
+              <th class="border px-4 py-2 text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let plan of minePlans" class="hover:bg-gray-100 transition duration-300">
+              <td class="border px-4 py-2 text-center">{{ plan.planId }}</td>
+              <td class="border px-4 py-2 text-center">{{ plan.siteId }}</td>
+              <td class="border px-4 py-2 text-center">{{ plan.activityType }}</td>
+              <td class="border px-4 py-2 text-center">{{ plan.startDate }}</td>
+              <td class="border px-4 py-2 text-center">{{ plan.endDate }}</td>
+              <td class="border px-4 py-2 text-center">
+                <span [class.bg-green-200]="plan.status === 'Completed'" 
+                      [class.bg-yellow-200]="plan.status === 'InProgress'" 
+                      [class.bg-red-200]="plan.status === 'Cancelled'"
+                      class="px-3 py-1 rounded-full text-sm font-medium">
+                  {{ plan.status }}
+                </span>
+              </td>
+              <td class="border px-4 py-2 text-center flex gap-2 justify-center">
+                <button (click)="editPlan(plan)" 
+                        class="px-3 py-1 rounded bg-blue-500 text-white hover:bg-blue-600 transition">
+                  Edit
+                </button>
+                <button (click)="deleteMinePlan(plan.planId)" 
+                        class="px-3 py-1 rounded bg-red-500 text-white hover:bg-red-600 transition">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
+    <!-- View Plans by Site -->
+    <div *ngIf="activeTab === 'viewBySite'" class=" p-6 rounded-lg ">
+      <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">Mine Plans by Site</h2>
+      <div class="flex justify-center gap-4 mb-6">
+        <input
+          type="number"
+          [(ngModel)]="selectedSiteId"
+          placeholder="Enter Site ID"
+          class="border p-3 rounded-lg focus:ring-2 focus:ring-blue-300 w-64"
+        />
+        <button (click)="fetchMinePlansBySite()" 
+                class="px-6 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600 transition">
+          Fetch Plans
+        </button>
+      </div>
+      <table *ngIf="minePlansBySite.length" class="w-full table-auto border-collapse border border-gray-200">
+        <thead class="bg-green-500 text-white">
+          <tr>
+            <th class="border px-4 py-2 text-center">Plan ID</th>
+            <th class="border px-4 py-2 text-center">Activity</th>
+            <th class="border px-4 py-2 text-center">Start Date</th>
+            <th class="border px-4 py-2 text-center">End Date</th>
+            <th class="border px-4 py-2 text-center">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let plan of minePlansBySite" class="hover:bg-gray-100 transition duration-300">
+            <td class="border px-4 py-2 text-center">{{ plan.planId }}</td>
+            <td class="border px-4 py-2 text-center">{{ plan.activityType }}</td>
+            <td class="border px-4 py-2 text-center">{{ plan.startDate }}</td>
+            <td class="border px-4 py-2 text-center">{{ plan.endDate }}</td>
+            <td class="border px-4 py-2 text-center">{{ plan.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Add/Update Plan -->
+    <div *ngIf="activeTab === 'addUpdate'" class=" p-6 rounded-lg ">
+      <h2 class="text-2xl font-bold mb-6 text-gray-800 text-center">
+        {{ isEditing ? 'Update Plan' : 'Add New Plan' }}
+      </h2>
+      <form [formGroup]="minePlanForm" (ngSubmit)="validateAndSaveMinePlan()" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label class="block mb-2 font-medium text-gray-700">Site ID</label>
+          <input formControlName="siteId" 
+                 placeholder="Site ID" 
+                 class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-300" />
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-700">Activity Type</label>
+          <select formControlName="activityType" 
+                  class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-300">
+            <option value="excavation">Excavation</option>
+            <option value="drilling">Drilling</option>
+            <option value="blasting">Blasting</option>
+          </select>
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-700">Start Date</label>
+          <input formControlName="startDate" type="date" 
+                 class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-300" />
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-700">End Date</label>
+          <input formControlName="endDate" type="date" 
+                 class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-300" />
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-700">Status</label>
+          <select formControlName="status" 
+                  class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-300">
+            <option value="Pending">Pending</option>
+            <option value="InProgress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div>
+          <label class="block mb-2 font-medium text-gray-700">Assigned Engineer</label>
+          <input formControlName="assignedEngineerUsername" 
+                 placeholder="Engineer Username" 
+                 class="w-full border p-3 rounded-lg focus:ring-2 focus:ring-blue-300" />
+        </div>
+        <div class="col-span-2 flex justify-center">
+          <button type="submit" class="px-6 py-3 rounded-lg bg-green-500 text-white hover:bg-green-600 transition">
+            {{ isEditing ? 'Update Plan' : 'Save Plan' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
